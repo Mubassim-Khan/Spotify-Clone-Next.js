@@ -1,18 +1,29 @@
 "use client";
 
-import React from "react";
+import useAuthModal from "@/hooks/useAuthModal";
+import useUploadModal from "@/hooks/useUploadModal";
+import { useUser } from "@/hooks/useUser";
 import { AiOutlinePlus } from "react-icons/ai";
 import { TbPlaylist } from "react-icons/tb";
 
 export const Library = () => {
-  const onClick = () => {};
+  const authModal = useAuthModal();
+  const uploadModal = useUploadModal();
+  const { user } = useUser();
+
+  const onClick = () => {
+    if (!user) {
+      return authModal.onOpen();
+    }
+    return uploadModal.onOpen();
+  };
 
   return (
     // Renders below the Sidebar's Home & Search label.
     <div className="flex flex-col">
       <div className="flex items-center justify-between px-5 pt-4">
         <div className="inline-flex items-center gap-x-2">
-            {/* Library of songs */}
+          {/* Library of songs */}
           <TbPlaylist className="text-neutral-400" size={25} />
           <p className="text-neutral-400 font-medium text-md">Your Library</p>
         </div>
