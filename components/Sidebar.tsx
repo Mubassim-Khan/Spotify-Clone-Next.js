@@ -7,12 +7,14 @@ import { HiHome } from "react-icons/hi";
 import { Box } from "./Box";
 import { SidebarItem } from "./SidebarItem";
 import { Library } from "./Library";
+import { Song } from "@/types/types_Song";
 
 type SidebarProps = {
   children: React.ReactNode;
+  songs: Song[];
 };
 
-export const Sidebar = ({ children }: SidebarProps) => {
+export const Sidebar = ({ children, songs }: SidebarProps) => {
   const pathname = usePathname();
 
   // useMemo will only recompute the memoized value when one of the deps has changed.
@@ -47,7 +49,7 @@ export const Sidebar = ({ children }: SidebarProps) => {
           </div>
         </Box>
         <Box className="overflow-y-auto h-full">
-          <Library />
+          <Library songs={songs} />
         </Box>
       </div>
 
