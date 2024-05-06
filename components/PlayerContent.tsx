@@ -113,7 +113,7 @@ export const PlayerContent = ({ song, songURL }: PlayerContentProps) => {
           onClick={onPlayPrevious}
         />
         <div
-          className="flex items-center jusitfy-center h-10 w-10 rounded-full bg-white cursor-pointer p-1"
+          className="flex items-center justify-center h-10 w-10 rounded-full bg-white cursor-pointer p-1"
           onClick={handlePlay}>
           <Icon size={30} className="text-black" />
         </div>
