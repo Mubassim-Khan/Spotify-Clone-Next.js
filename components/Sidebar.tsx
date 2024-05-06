@@ -8,6 +8,8 @@ import { Box } from "./Box";
 import { SidebarItem } from "./SidebarItem";
 import { Library } from "./Library";
 import { Song } from "@/types/types_Song";
+import usePlayer from "@/hooks/usePlayer";
+import { twMerge } from "tailwind-merge";
 
 type SidebarProps = {
   children: React.ReactNode;
@@ -16,6 +18,7 @@ type SidebarProps = {
 
 export const Sidebar = ({ children, songs }: SidebarProps) => {
   const pathname = usePathname();
+  const player = usePlayer();
 
   // useMemo will only recompute the memoized value when one of the deps has changed.
   // Passed in Home & Search having lables, icon, href ec
@@ -38,7 +41,7 @@ export const Sidebar = ({ children, songs }: SidebarProps) => {
   );
 
   return (
-    <div className="flex h-full">
+    <div className={twMerge('flex h-full', player.activeId && "h-[calc(100%-80px)]")}>
       <div className="hidden md:flex flex-col gap-y-2 bg-black h-full w-[300px] p-2">
         <Box>
           <div className="flex flex-col gap-y-5 px-5 py-4">
