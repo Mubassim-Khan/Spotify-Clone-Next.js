@@ -1,6 +1,7 @@
 "use client";
 
 import useLoadImage from "@/hooks/useLoadImage";
+import usePlayer from "@/hooks/usePlayer";
 import { Song } from "@/types/types_Song";
 import Image from "next/image";
 
@@ -10,12 +11,15 @@ type MediaItemProps = {
 };
 
 export const MediaItem = ({ onClick, data }: MediaItemProps) => {
+  const player = usePlayer();
   const ImageURL = useLoadImage(data);
 
   const handleClick = () => {
     if (onClick) {
       return onClick(data.id);
     }
+
+    return player.setId(data.id);
   };
 
   return (
