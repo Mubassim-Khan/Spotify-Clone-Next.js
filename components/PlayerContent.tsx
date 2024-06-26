@@ -52,33 +52,33 @@ export const PlayerContent = ({
   songURL,
 }: PlayerContentProps) => {
   const player = usePlayer();
-  const [isPlaying, setIsPlaying] = useState(false);
   const playerRef = useRef<ReactPlayer>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [seek, setSeek] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [songDuration, setSongDuration] = useState("");
-  const [playedDuration, setPlayedDuration] = useState("");
+  const [songDuration, setSongDuration] = useState('');
+  const [playedDuration, setPlayedDuration] = useState('');
 
   const { onOpen } = usePlayerModal();
 
-  const Icon = isPlaying ? BsPauseFill : BsPlayFill;
-  const VolumeIcon = volume === 0 ? HiSpeakerXMark : HiSpeakerWave;
-
-  const onPlayNext = () => {
-    if (player.ids.length === 0) {
-      return;
+  const handlePlay = () => {
+    if (!isPlaying) {
+      setIsPlaying(true);
+    } else {
+      setIsPlaying(false);
     }
-
-    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
-    const nextSong = player.ids[currentIndex + 1];
-
-    if (!nextSong) {
-      return player.setId(player.ids[0]);
-    }
-
-    player.setId(nextSong);
   };
 
+  const toggleMute = () => {
+    if (volume !== 0) {
+      setOldVolume(volume);
+      setVolume(0);
+    } else {
+      setVolume(oldVolume);
+    }
+  };
+
+  // Play Previous Song
   const onPlayPrevious = () => {
     if (player.ids.length === 0) {
       return;
@@ -94,33 +94,28 @@ export const PlayerContent = ({
     player.setId(previousSong);
   };
 
-  const [play, { pause, sound }] = useSound(songURL, {
-    volume: volume,
-    onplay: () => setIsPlaying(true),
-    onend: () => {
-      setIsPlaying(false);
-      onPlayNext();
-    },
-    onpause: () => setIsPlaying(false),
-    format: ["mp3"],
-  });
-
-  const handlePlay = () => {
-    if (!isPlaying) {
-      play();
-    } else {
-      pause();
+  // Play Next Song
+  const onPlayNext = (clicked = false) => {
+    if (player.ids.length === 0) {
+      return;
     }
-  };
 
-  // Mute the song
-  const toggleMute = () => {
-    if (volume !== 0) {
-      setOldVolume(volume);
-      setVolume(0);
+    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
+    let nextSong: string;
+
+    if (isLoop && !clicked) {
+      nextSong = player.ids[currentIndex];
+      playerRef.current?.seekTo(0);
+      setIsPlaying(true);
     } else {
-      setVolume(oldVolume);
+      nextSong = player.ids[currentIndex + 1];
     }
+
+    if (!nextSong) {
+      return player.setId(player.ids[0]);
+    }
+
+    return player.setId(nextSong);
   };
 
   // Toggle Loop
@@ -146,10 +141,10 @@ export const PlayerContent = ({
     const minutes = Math.floor(playedSeconds / 60);
     const seconds = Math.round(playedSeconds - minutes * 60);
     setPlayedDuration(
-      `${minutes}:${seconds.toLocaleString("en-US", {
+      `${minutes}:${seconds.toLocaleString('en-US', {
         minimumIntegerDigits: 2,
         useGrouping: false,
-      })}`
+      })}`,
     );
     setSeek(played);
   };
@@ -159,105 +154,113 @@ export const PlayerContent = ({
     const minutes = Math.floor(duration / 60);
     const seconds = Math.round(duration - minutes * 60);
     setSongDuration(
-      `${minutes}:${seconds.toLocaleString("en-US", {
+      `${minutes}:${seconds.toLocaleString('en-US', {
         minimumIntegerDigits: 2,
         useGrouping: false,
-      })}`
+      })}`,
     );
   };
 
   useEffect(() => {
-    sound?.play();
+    setIsPlaying(true);
 
     return () => {
-      sound?.unload();
+      setIsPlaying(false);
     };
-  }, [sound]);
+  }, []);
+
+  // Player Icons
+  const Icon = isPlaying ? BsPauseFill : BsPlayFill;
+  const VolumeIcon = volume === 0 ? HiSpeakerXMark : HiSpeakerWave;
 
   return (
     <>
-      <div className="flex justify-between h-full w-full md:hidden">
-        <div className="flex w-full justify-start" onClick={onOpen}>
-          <div className="flex items-center w-[230px]">
+      <div className='flex justify-between h-full w-full md:hidden'>
+        <div className='flex w-full justify-start' onClick={onOpen}>
+          <div className='flex items-center w-[230px]'>
             <MediaItem data={song} />
             <LikeButton songId={song.id} />
           </div>
         </div>
 
-        <div className="flex gap-x-4 items-center">
+        <div className='flex gap-x-4 items-center'>
           <VolumeIcon
             onClick={toggleMute}
-            className="cursor-pointer"
+            className='cursor-pointer'
             size={25}
           />
           <div
             onClick={handlePlay}
-            className="h-10 w-10 flex items-center justify-center rounded-full 
-            bg-white p-1 cursor-pointer">
-            <Icon size={30} className="text-black" />
+            className='h-10 w-10 flex items-center justify-center rounded-full 
+            bg-white p-1 cursor-pointer'
+          >
+            <Icon size={30} className='text-black' />
           </div>
         </div>
       </div>
 
-      <div className="hidden md:flex md:flex-row h-full w-full">
-        <div className="flex w-full justify-start">
-          <div className="flex items-center justify-start w-[230px]">
+      <div className='hidden md:flex md:flex-row h-full w-full'>
+        <div className='flex w-full justify-start'>
+          <div className='flex items-center justify-start w-[230px]'>
             <MediaItem data={song} />
             <LikeButton songId={song.id} />
           </div>
         </div>
 
-        <div className="flex flex-col justify-between items-center h-full w-full">
-          <div className="flex justify-center items-center w-full max-w-[722px] gap-x-4">
+        <div className='flex flex-col justify-between items-center h-full w-full'>
+          <div className='flex justify-center items-center w-full max-w-[722px] gap-x-4'>
             {!isShuffle ? (
               <BsArrowRight
                 size={23}
                 onClick={onShuffle}
-                className="text-neutral-400 cursor-pointer hover:text-white transition"
+                className='text-neutral-400 cursor-pointer hover:text-white transition'
               />
             ) : (
               <BsShuffle
                 size={23}
                 onClick={onShuffle}
-                className="text-neutral-400 cursor-pointer hover:text-white transition"
+                className='text-neutral-400 cursor-pointer hover:text-white transition'
               />
             )}
 
             <AiFillStepBackward
               onClick={onPlayPrevious}
               size={30}
-              className="text-neutral-400 cursor-pointer hover:text-white transition"
+              className='text-neutral-400 cursor-pointer hover:text-white transition'
             />
             <div
               onClick={handlePlay}
-              className="flex items-center justify-center h-10 w-10 rounded-full 
-          bg-white p-1 cursor-pointer hover:scale-110">
-              <Icon size={30} className="text-black" />
+              className='flex items-center justify-center h-10 w-10 rounded-full 
+          bg-white p-1 cursor-pointer hover:scale-110'
+            >
+              <Icon size={30} className='text-black' />
             </div>
             <AiFillStepForward
-              onClick={onPlayNext}
+              onClick={() => {
+                onPlayNext(true);
+              }}
               size={30}
-              className="text-neutral-400 cursor-pointer hover:text-white transition"
+              className='text-neutral-400 cursor-pointer hover:text-white transition'
             />
             {isLoop ? (
               <BsRepeat1
                 onClick={onLoop}
                 size={23}
-                className="text-white cursor-pointer hover:text-white transition"
+                className='text-white cursor-pointer hover:text-white transition'
               />
             ) : (
               <BsRepeat
                 onClick={onLoop}
                 size={23}
-                className="text-neutral-400 cursor-pointer hover:text-white transition"
+                className='text-neutral-400 cursor-pointer hover:text-white transition'
               />
             )}
           </div>
-          <div className="w-full flex flex-row justify-center">
-            <p className="text-xs text-neutral-400 leading-[0.85rem] pr-2">
+          <div className='w-full flex flex-row justify-center'>
+            <p className='text-xs text-neutral-400 leading-[0.85rem] pr-2'>
               {playedDuration}
             </p>
-            <div className="flex w-[80%]">
+            <div className='flex w-[80%]'>
               <Seekbar
                 value={seek}
                 onChange={(value) => {
@@ -266,17 +269,17 @@ export const PlayerContent = ({
                 }}
               />
             </div>
-            <p className="text-xs text-neutral-400 leading-[0.85rem] pl-2">
+            <p className='text-xs text-neutral-400 leading-[0.85rem] pl-2'>
               {songDuration}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center w-full justify-end pr-2">
-          <div className="flex items-center gap-x-2 w-[120px]">
+        <div className='flex items-center w-full justify-end pr-2'>
+          <div className='flex items-center gap-x-2 w-[120px]'>
             <VolumeIcon
               onClick={toggleMute}
-              className="cursor-pointer"
+              className='cursor-pointer'
               size={30}
             />
             <Slider value={volume} onChange={(value) => setVolume(value)} />
@@ -305,7 +308,7 @@ export const PlayerContent = ({
         songDuration={songDuration}
       />
 
-      <div className="hidden">
+      <div className='hidden'>
         <ReactPlayer
           ref={playerRef}
           url={songURL}
