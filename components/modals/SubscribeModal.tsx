@@ -2,7 +2,7 @@
 
 import { ProductWithPrice } from "@/types/types_ProductWithPrice";
 import { Modal } from "./Modal";
-import { CustomButton } from "./CustomButton";
+import { CustomButton } from "../CustomButton";
 import { Price } from "@/types/types_Price";
 import { useState } from "react";
 import { useUser } from "@/hooks/useUser";
