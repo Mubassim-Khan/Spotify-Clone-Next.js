@@ -12,6 +12,7 @@ import { useUser } from "@/hooks/useUser";
 import { FaUserAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
 import usePlayer from "@/hooks/usePlayer";
+import Link from "next/link";
 
 type HeaderProps = {
   children: React.ReactNode;
@@ -34,7 +35,7 @@ export const Header = ({ children, className }: HeaderProps) => {
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success('Logged Out!')
+      toast.success("Logged Out!");
     }
   };
 
@@ -63,20 +64,25 @@ export const Header = ({ children, className }: HeaderProps) => {
 
         {/* Home button (Works only if the view is of mobile size) */}
         <div className="flex md:hidden gap-x-2 items-center">
-          <button className="rounded-full p-2 bg-white justify-center flex items-center hover:opacity-75 transition">
-            <HiHome size={25} className="text-black" />
-          </button>
+          <Link href={"/"}>
+            <button className="rounded-full p-2 bg-white justify-center flex items-center hover:opacity-75 transition">
+              <HiHome size={25} className="text-black" />
+            </button>
+          </Link>
 
           {/* Search button (Works only if the view is of mobile size) */}
-          <button className="rounded-full p-2 bg-white justify-center flex items-center hover:opacity-75 transition">
-            <BiSearch size={25} className="text-black" />
-          </button>
+          <Link href={"/search"}>
+            <button className="rounded-full p-2 bg-white justify-center flex items-center hover:opacity-75 transition">
+              <BiSearch size={25} className="text-black" />
+            </button>
+          </Link>
         </div>
 
         {/* Button For Log In & Sign in */}
         <div className="flex items-center justify-between gap-x-4">
           {user ? (
             <div className="flex gap-x-4 items-center">
+              {toast.success("Logged In")}
               <CustomButton
                 onClick={handleLogout}
                 className="bg-white px-6 py-2">
