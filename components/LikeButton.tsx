@@ -10,9 +10,10 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
 type LikeButtonProps = {
   songId: string;
+  iconSize?: number;
 };
 
-export const LikeButton = ({ songId }: LikeButtonProps) => {
+export const LikeButton = ({ songId, iconSize = 25 }: LikeButtonProps) => {
   const router = useRouter();
   const { supabaseClient } = useSessionContext();
 
@@ -79,7 +80,7 @@ export const LikeButton = ({ songId }: LikeButtonProps) => {
 
   return (
     <button className="hover:opacity-75 transition" onClick={handleLike}>
-      <Icon color={isLiked ? "#22c55e" : "white"} size={25} />
+      <Icon color={isLiked ? "#22c55e" : "white"} size={iconSize} />
     </button>
   );
 };
